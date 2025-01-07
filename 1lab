@@ -1,0 +1,78 @@
+class Document:
+    """Представляет документ с текстом."""
+    def init(self, text=""):
+        self.text = text
+        self.index = 0
+
+    def insert(self, text_to_insert):
+        """Вставляет текст в указанную позицию (index)."""
+        self.text = self.text[:self.index] + text_to_insert + self.text[self.index:]
+        self.index += len(text_to_insert)
+
+
+    def delete(self, count=1):
+        """Удаляет символы начиная с позиции index."""
+        if self.index + count <= len(self.text):
+            self.text = self.text[:self.index] + self.text[self.index + count:]
+        else:
+            self.text = self.text[:self.index]
+
+    def get_text(self):
+        return self.text
+
+
+class Selection:
+  """Проверяет, есть ли текст на данном участке """
+  def init(self, start=0, end=0):
+    self.start = start
+    self.end = end
+
+  def is_valid(self):
+      return self.start >=0 and self.end >= self.start
+
+  def clear(self):
+    self.start = 0
+    self.end = 0
+
+  def expand(self, offset):
+      self.end += offset
+      if self.end < self.start:
+          self.end = self.start
+
+  def contract(self, offset):
+        self.end -= offset
+        if self.end < self.start:
+            self.end = self.start
+
+
+class TextEditor:
+    """Основной класс текстового редактора."""
+    def init(self):
+        self.document = Document()
+        self.selection = Selection()
+
+    def insert(self, text):
+        self.document.insert(text)
+        
+    def delete(self, count=1):
+        self.document.delete(count)
+
+    def get_text(self):
+        return self.document.get_text()
+
+    def set_selection(self, start, end):
+        self.selection.start = start
+        self.selection.end = end
+        
+        
+
+# Пример использования:
+editor = TextEditor()
+editor.insert("Hello, world!")
+print(editor.get_text())  # Вывод: Hello, world!
+editor.document.index = 7  # Устанавливаем индекс, как позицию
+editor.delete(editor.document.index)
+print(editor.get_text())  # Вывод: Hello,
+
+editor.set_selection(1, 5)
+print(editor.selection.is_valid())
