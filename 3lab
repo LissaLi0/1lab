@@ -1,0 +1,66 @@
+import re
+
+def is_valid_expression(expression):
+    """Проверяет, является ли выражение синтаксически корректным."""
+    pattern = r"^([\(\d]+(\.\d+)?[\+\-\*\/\(]?)*[\)\d]+$" 
+    return bool(re.match(pattern, expression))
+
+
+def validate_expression(expression):
+    """Проверяет выражение и возвращает результат и причину, если невалидно."""
+    pattern = r"^([\(\d]+(\.\d+)?[\+\-\*\/\(]?)*[\)\d]+$"
+    match = re.match(pattern, expression)
+
+    if match:
+        return True, "Выражение валидно"
+    else:
+        if not expression:
+          return False, "Выражение пусто"
+        if not re.match(r"[\d\+\-\*\/\(\)\.]+", expression): #проверка на посторонние символы
+           return False, "Выражение содержит недопустимые символы"
+        if not re.match(r"^[\(\d]", expression): # Проверка, что начинается с ( или \d
+          return False, "Выражение не начинается с цифры или открывающей скобки"
+        if re.search(r"\.\.", expression):
+          return False, "Выражение содержит несколько точек подряд"
+        if not re.search(r"[\)\d]$", expression):  # Проверка что заканчивается на ) или цифру
+          return False, "Выражение не заканчивается числом или закрывающей скобкой"
+
+        return False, "Выражение не соответствует формату"
+
+
+def get_user_input():
+  """Получает пользовательский ввод."""
+  while True:
+        expression = input("Введите математическое выражение (или 'exit' для выхода): ")
+        if expression.lower() == 'exit':
+            return None
+        yield expression 
+
+def main():
+    """Главная функция."""
+    for expression in get_user_input():
+        if expression is None:
+          break
+        is_valid, message = validate_expression(expression)
+        print(f"'{expression}' - {message}")
+
+
+if __name__ == "__main__":
+    main()
+
+
+    # 1 + 2 * a  невалидно 
+    #2 +   невалидно
+    #" "   невалидно
+    #12 34 невалидно
+    #12    + 3 невалидно
+    #1+ невалидно
+    #1++1 невалидно
+    #1.234 валидно
+    #1.2.3 невалидно
+    #(2*(3-1)) валидно
+    #2*(3-1)  валидно,
+    #2*(3-1  валидно
+
+
+    
